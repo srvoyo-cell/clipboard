@@ -1,37 +1,14 @@
-    df = pd.read_csv(TSV_PATH, sep="\t")
-
-    required_columns = {"image_path", "text"}
-    missing = required_columns - set(df.columns)
-    if missing:
-        raise ValueError(f"Missing columns in TSV: {missing}")
-
-    samples = []
-
-    for _, row in df.iterrows():
-        image_path = str(row["image_path"])
-        text = str(row["text"])
-
-        prompt = str(row["prompt"]) if "prompt" in df.columns and pd.notna(row["prompt"]) else DEFAULT_PROMPT
-
-        samples.append(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": f"<image>{prompt}",
-                    },
-                    {
-                        "role": "assistant",
-                        "content": text,
-                    },
-                ],
-                "images": [image_path],
-            }
-        )
-
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-    with OUT_PATH.open("w", encoding="utf-8") as f:
-        json.dump(samples, f, ensure_ascii=False, indent=2)
-
-    print(f"Saved {len(samples)} samples to {OUT_PATH}")
+"my_glm_ocr": {
+  "file_name": "glm_ocr_train.json",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "messages",
+    "images": "images"
+  },
+  "tags": {
+    "role_tag": "role",
+    "content_tag": "content",
+    "user_tag": "user",
+    "assistant_tag": "assistant"
+  }
+}
