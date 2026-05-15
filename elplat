@@ -1,37 +1,20 @@
-### model
-model_name_or_path: zai-org/GLM-OCR
-trust_remote_code: true
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not MODEL_DIR.exists():
+        raise RuntimeError(f"Model directory not found: {MODEL_DIR}")
 
-### method
-stage: sft
-do_train: true
-finetuning_type: lora
-lora_rank: 8
-lora_alpha: 16
-lora_dropout: 0.05
-lora_target: all
+    state.processor = TrOCRProcessor.from_pretrained(MODEL_DIR)
+    state.model = VisionEncoderDecoderModel.from_pretrained(MODEL_DIR)
+    state.model.to(state.device)
+    state.model.eval()
 
-### dataset
-dataset: my_glm_ocr
-template: glm_ocr
-cutoff_len: 2048
-preprocessing_num_workers: 4
+    print(f"Model loaded from: {MODEL_DIR}")
+    print(f"Device: {state.device}")
 
-### output
-output_dir: saves/glm-ocr/lora/sft
-logging_steps: 10
-save_steps: 500
-plot_loss: true
-overwrite_output_dir: true
+    yield
 
-### train
-per_device_train_batch_size: 1
-gradient_accumulation_steps: 8
-learning_rate: 1.0e-4
-num_train_epochs: 3
-lr_scheduler_type: cosine
-warmup_ratio: 0.1
-bf16: true
+    state.processor = None
+    state.model = None
 
-### memory
-gradient_checkpointing: true
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
