@@ -1,20 +1,24 @@
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    if not MODEL_DIR.exists():
-        raise RuntimeError(f"Model directory not found: {MODEL_DIR}")
+@torch.inference_mode()
+def recognize_image(image: Image.Image) -> str:
+    if state.processor is None or state.model is None:
+        raise RuntimeError("Model is not loaded")
 
-    state.processor = TrOCRProcessor.from_pretrained(MODEL_DIR)
-    state.model = VisionEncoderDecoderModel.from_pretrained(MODEL_DIR)
-    state.model.to(state.device)
-    state.model.eval()
+    image = image.convert("RGB")
 
-    print(f"Model loaded from: {MODEL_DIR}")
-    print(f"Device: {state.device}")
+    pixel_values = state.processor(
+        images=image,
+        return_tensors="pt",
+    ).pixel_values.to(state.device)
 
-    yield
+    generated_ids = state.model.generate(
+        pixel_values,
+        num_beams=4,
+        max_length=64,
+    )
 
-    state.processor = None
-    state.model = None
+    text = state.processor.batch_decode(
+        generated_ids,
+        skip_special_tokens=True,
+    )[0]
 
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    return clean_prediction(text)
