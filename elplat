@@ -1,24 +1,23 @@
-@torch.inference_mode()
-def recognize_image(image: Image.Image) -> str:
-    if state.processor is None or state.model is None:
-        raise RuntimeError("Model is not loaded")
+Ты извлекаешь поисковый запрос для базы знаний из диалога техподдержки.
 
-    image = image.convert("RGB")
+Нужно определить последнюю актуальную нерешённую проблему клиента и переформулировать её в одно короткое техническое предложение.
 
-    pixel_values = state.processor(
-        images=image,
-        return_tensors="pt",
-    ).pixel_values.to(state.device)
+Требования к ответу:
+- только одна проблема;
+- только последняя актуальная проблема;
+- без старых решённых проблем;
+- без слов "клиент", "пользователь", "сообщает", "просит", "жалуется";
+- без описания диалога;
+- без markdown;
+- без пояснений;
+- максимум 25 слов;
+- сохрани важные термины, ошибки, коды, названия сервисов и объектов;
+- формулировка должна быть полезна для поиска похожей статьи в базе знаний.
 
-    generated_ids = state.model.generate(
-        pixel_values,
-        num_beams=4,
-        max_length=64,
-    )
+Если последняя проблема решена или проблемы нет, ответь строго:
+Актуальная проблема отсутствует.
 
-    text = state.processor.batch_decode(
-        generated_ids,
-        skip_special_tokens=True,
-    )[0]
+Диалог:
+{{dialog}}
 
-    return clean_prediction(text)
+Ответ:
