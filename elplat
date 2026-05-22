@@ -407,7 +407,6 @@ def show_result(result: dict) -> None:
     axes[1, 1].imshow(result["high_frequency_map"], cmap="gray")
     axes[1, 1].set_title("High-frequency map")
 
-    # Визуальная шкала вероятности
     prob_bar = np.zeros((80, 400), dtype=np.uint8)
     filled = int(probability / 100 * prob_bar.shape[1])
     prob_bar[:, :filled] = 255
@@ -425,6 +424,12 @@ def show_result(result: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("image_path", type=str, help="Path to image file")
+    parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Show postprocessed image visualization",
+    )
+
     args = parser.parse_args()
 
     result = analyze_image(args.image_path)
@@ -439,7 +444,8 @@ def main() -> None:
     print(f"moire_score: {result['moire_score']:.4f}")
     print(f"straight_lines_score: {result['straight_lines_score']:.0f}")
 
-    show_result(result)
+    if args.show:
+        show_result(result)
 
 
 if __name__ == "__main__":
