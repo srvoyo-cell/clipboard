@@ -97,92 +97,26 @@ curl -sS -X POST 'http://127.0.0.1:100/' \
   }'
 
 
+Извлеки из диалога техподдержки короткие поисковые формулировки для базы знаний.
 
-Traceback (most recent call last):
-  File "/app/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 421, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 56, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1159, in __call__
-    await super().__call__(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/applications.py", line 90, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
-    raise exc
-  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    raise exc
-  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    await app(scope, receive, sender)
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
-    await self.app(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 660, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 680, in app
-    await route.handle(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 276, in handle
-    await self.app(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 134, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    raise exc
-  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    await app(scope, receive, sender)
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 120, in app
-    response = await f(request)
-               ^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 674, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 330, in run_endpoint_function
-    return await run_in_threadpool(dependant.call, **values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
-    return await anyio.to_thread.run_sync(func)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 63, in run_sync
-    return await get_async_backend().run_sync_in_worker_thread(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
-    return await future
-           ^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
-    result = context.run(func, *args)
-             ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/src/app.py", line 29, in handle_request
-    return {"status": True, "result": handler(request)}
-                                      ^^^^^^^^^^^^^^^^
-  File "/app/src/handles.py", line 89, in ask_llm
-    return parser(**kwargs)
-           ^^^^^^^^^^^^^^^^
-  File "/app/src/clients/vllm_client.py", line 33, in get_parsed_data_vllm
-    response = llm_client.chat.completions.parse(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 191, in parse
-    return self._post(
-           ^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1332, in post
-    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1110, in request
-    return self._process_response(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1199, in _process_response
-    return api_response.parse()
-           ^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/_response.py", line 328, in parse
-    parsed = self._options.post_parser(parsed)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 185, in parser
-    return _parse_chat_completion(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.12/site-packages/openai/lib/_parsing/_completions.py", line 100, in parse_chat_completion
-    raise LengthFinishReasonError(completion=chat_completion)
-openai.LengthFinishReasonError: Could not parse response content as the length limit was reached - CompletionUsage(completion_tokens=3465, prompt_tokens=631, total_tokens=4096, completion_tokens_details=None, prompt_tokens_details=None)
+Сначала найди все проблемы пользователя, которые остаются нерешёнными на конец диалога.
+Если нерешённых проблем нет, кратко перефразируй последнее содержательное сообщение пользователя.
+Если последнее сообщение — только благодарность, подтверждение, приветствие или пустой текст, верни пустой список.
 
+Правила:
+- анализируй весь диалог;
+- исключай проблемы, которые пользователь подтвердил как решённые;
+- если проблема уточнялась, используй последнюю и самую полную формулировку;
+- одна проблема или тема = один короткий элемент списка;
+- не добавляй предположения и действия поддержки;
+- не используй слова "пользователь", "клиент", "сообщает", "жалуется";
+- сохраняй важные термины, ошибки, коды, версии, сервисы и устройства;
+- формулировки должны подходить для поиска по базе знаний;
+- максимум 25 слов на элемент;
+- не рассуждай и не объясняй.
+
+Верни только список строк. Если подходящих элементов нет, верни пустой список.
+
+Диалог:
+{{dialog}}
 
