@@ -113,3 +113,10 @@ curl -sS -X POST 'http://127.0.0.1:100/' \
 - не используй слова "пользователь", "клиент", "сообщает", "жалуется";
 - одна строка = один запрос;
 - максимум 25 слов на строку.
+
+FILE_B64=$(base64 -i passport.jpg | tr -d '\n')
+
+printf '{"action":"passport_ocr","file":"%s"}' "$FILE_B64" | \
+curl -X POST "http://localhost:8000/" \
+  -H "Content-Type: application/json" \
+  --data-binary @-
