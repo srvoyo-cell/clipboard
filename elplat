@@ -98,355 +98,91 @@ curl -sS -X POST 'http://127.0.0.1:100/' \
 
 
 
-from __future__ import annotations
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 421, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/app/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/app.py", line 29, in handle_request
+    return {"status": True, "result": handler(request)}
+                                      ^^^^^^^^^^^^^^^^
+  File "/app/src/handles.py", line 89, in ask_llm
+    return parser(**kwargs)
+           ^^^^^^^^^^^^^^^^
+  File "/app/src/clients/vllm_client.py", line 33, in get_parsed_data_vllm
+    response = llm_client.chat.completions.parse(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 191, in parse
+    return self._post(
+           ^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1110, in request
+    return self._process_response(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/_base_client.py", line 1199, in _process_response
+    return api_response.parse()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/_response.py", line 328, in parse
+    parsed = self._options.post_parser(parsed)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 185, in parser
+    return _parse_chat_completion(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/openai/lib/_parsing/_completions.py", line 100, in parse_chat_completion
+    raise LengthFinishReasonError(completion=chat_completion)
+openai.LengthFinishReasonError: Could not parse response content as the length limit was reached - CompletionUsage(completion_tokens=3465, prompt_tokens=631, total_tokens=4096, completion_tokens_details=None, prompt_tokens_details=None)
 
-import argparse
-from pathlib import Path
 
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image, ExifTags
-
-
-def read_image(image_path: str | Path) -> tuple[np.ndarray, np.ndarray]:
-    image_path = Path(image_path)
-
-    bgr = cv2.imread(str(image_path))
-    if bgr is None:
-        raise ValueError(f"Cannot read image: {image_path}")
-
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-    gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-
-    return rgb, gray
-
-
-def has_camera_exif(image_path: str | Path) -> bool:
-    image = Image.open(image_path)
-    exif = image.getexif()
-
-    if not exif:
-        return False
-
-    tag_names = {
-        ExifTags.TAGS.get(k, k): v
-        for k, v in exif.items()
-    }
-
-    camera_tags = {
-        "Make",
-        "Model",
-        "LensModel",
-        "DateTimeOriginal",
-        "ExposureTime",
-        "FNumber",
-        "ISOSpeedRatings",
-        "FocalLength",
-    }
-
-    return any(tag in tag_names for tag in camera_tags)
-
-
-def normalize_uint8(image: np.ndarray) -> np.ndarray:
-    image = image.astype(np.float32)
-    image = image - image.min()
-    image = image / (image.max() + 1e-8)
-    return (image * 255).astype(np.uint8)
-
-
-def blur_score(gray: np.ndarray) -> float:
-    """
-    Меньше = более мутно.
-    Фото монитора часто мутнее настоящего скриншота.
-    """
-    return float(cv2.Laplacian(gray, cv2.CV_64F).var())
-
-
-def noise_score(gray: np.ndarray) -> float:
-    """
-    Больше = больше мелкого шума.
-    Фото камерой обычно шумнее скриншота.
-    """
-    gray_f = gray.astype(np.float32)
-    smooth = cv2.GaussianBlur(gray_f, (5, 5), 0)
-    noise = gray_f - smooth
-    return float(np.std(noise))
-
-
-def glare_mask(rgb: np.ndarray) -> np.ndarray:
-    """
-    Маска бликов/засветов.
-    """
-    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
-    h, s, v = cv2.split(hsv)
-
-    bright = v > 245
-    low_saturation = s < 40
-
-    mask = bright & low_saturation
-    return mask.astype(np.uint8) * 255
-
-
-def glare_score(rgb: np.ndarray) -> float:
-    mask = glare_mask(rgb)
-    return float((mask > 0).mean())
-
-
-def edge_map(gray: np.ndarray) -> np.ndarray:
-    return cv2.Canny(gray, 80, 160)
-
-
-def high_frequency_map(gray: np.ndarray) -> np.ndarray:
-    """
-    Карта высокочастотных деталей.
-    На фото монитора тут часто проявляются сетки, муар, полосы.
-    """
-    gray_f = gray.astype(np.float32)
-    blurred = cv2.GaussianBlur(gray_f, (21, 21), 0)
-    high_freq = gray_f - blurred
-    return normalize_uint8(np.abs(high_freq))
-
-
-def moire_score(gray: np.ndarray) -> float:
-    """
-    Примерная оценка регулярных высокочастотных паттернов через FFT.
-    Больше = больше подозрение на муар/сетку.
-    """
-    gray_f = gray.astype(np.float32)
-
-    blurred = cv2.GaussianBlur(gray_f, (21, 21), 0)
-    high_freq = gray_f - blurred
-
-    spectrum = np.fft.fft2(high_freq)
-    spectrum = np.fft.fftshift(spectrum)
-    magnitude = np.log1p(np.abs(spectrum))
-
-    h, w = magnitude.shape
-    cy, cx = h // 2, w // 2
-
-    y, x = np.ogrid[:h, :w]
-    radius = min(h, w) // 10
-
-    center_mask = (x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2
-    outer_mask = ~center_mask
-
-    high_freq_energy = magnitude[outer_mask].mean()
-    total_energy = magnitude.mean() + 1e-8
-
-    return float(high_freq_energy / total_energy)
-
-
-def straight_lines_score(gray: np.ndarray) -> float:
-    """
-    Количество длинных прямых линий.
-    У фото экрана часто есть рамки монитора, границы окна, перспективные края.
-    """
-    edges = edge_map(gray)
-
-    lines = cv2.HoughLinesP(
-        edges,
-        rho=1,
-        theta=np.pi / 180,
-        threshold=120,
-        minLineLength=min(gray.shape[:2]) // 4,
-        maxLineGap=20,
-    )
-
-    if lines is None:
-        return 0.0
-
-    return float(len(lines))
-
-
-def sigmoid(x: float) -> float:
-    return 1 / (1 + np.exp(-x))
-
-
-def probability_photo_of_monitor(
-    *,
-    has_exif: bool,
-    blur: float,
-    noise: float,
-    glare: float,
-    moire: float,
-    lines: float,
-) -> float:
-    """
-    Эвристическая вероятность.
-    Это не обученная модель, а scoring-функция для первичной фильтрации.
-
-    На своём датасете пороги лучше подкрутить.
-    """
-
-    score = 0.0
-
-    # EXIF камеры — очень сильный сигнал.
-    if has_exif:
-        score += 2.5
-
-    # Фото монитора часто менее резкое.
-    if blur < 80:
-        score += 1.3
-    elif blur < 150:
-        score += 0.9
-    elif blur < 300:
-        score += 0.4
-    else:
-        score -= 0.6
-
-    # Фото камерой часто шумнее.
-    if noise > 12:
-        score += 1.1
-    elif noise > 8:
-        score += 0.7
-    elif noise > 5:
-        score += 0.3
-    else:
-        score -= 0.4
-
-    # Блики/засветы.
-    if glare > 0.03:
-        score += 1.0
-    elif glare > 0.01:
-        score += 0.5
-
-    # Муар / регулярные высокие частоты.
-    if moire > 1.12:
-        score += 1.0
-    elif moire > 1.08:
-        score += 0.5
-
-    # Длинные линии.
-    if lines > 40:
-        score += 0.6
-    elif lines > 20:
-        score += 0.3
-
-    # Сдвигаем, чтобы обычные картинки не слишком часто попадали в photo_monitor.
-    score -= 1.2
-
-    return float(sigmoid(score) * 100)
-
-
-def analyze_image(image_path: str | Path) -> dict:
-    image_path = Path(image_path)
-
-    rgb, gray = read_image(image_path)
-
-    exif = has_camera_exif(image_path)
-    blur = blur_score(gray)
-    noise = noise_score(gray)
-    glare = glare_score(rgb)
-    moire = moire_score(gray)
-    lines = straight_lines_score(gray)
-
-    probability = probability_photo_of_monitor(
-        has_exif=exif,
-        blur=blur,
-        noise=noise,
-        glare=glare,
-        moire=moire,
-        lines=lines,
-    )
-
-    if probability >= 70:
-        label = "photo_of_monitor"
-    elif probability <= 30:
-        label = "not_photo_of_monitor"
-    else:
-        label = "uncertain"
-
-    return {
-        "image_path": str(image_path),
-        "label": label,
-        "probability": probability,
-        "has_camera_exif": exif,
-        "blur_score": blur,
-        "noise_score": noise,
-        "glare_score": glare,
-        "moire_score": moire,
-        "straight_lines_score": lines,
-        "rgb": rgb,
-        "gray": gray,
-        "edges": edge_map(gray),
-        "glare_mask": glare_mask(rgb),
-        "high_frequency_map": high_frequency_map(gray),
-    }
-
-
-def show_result(result: dict) -> None:
-    probability = result["probability"]
-    label = result["label"]
-
-    title = (
-        f"{label} | probability: {probability:.1f}%\n"
-        f"EXIF: {result['has_camera_exif']} | "
-        f"blur: {result['blur_score']:.1f} | "
-        f"noise: {result['noise_score']:.1f} | "
-        f"glare: {result['glare_score']:.4f} | "
-        f"moire: {result['moire_score']:.3f} | "
-        f"lines: {result['straight_lines_score']:.0f}"
-    )
-
-    fig, axes = plt.subplots(2, 3, figsize=(15, 9))
-    fig.suptitle(title, fontsize=13)
-
-    axes[0, 0].imshow(result["rgb"])
-    axes[0, 0].set_title("Original")
-
-    axes[0, 1].imshow(result["gray"], cmap="gray")
-    axes[0, 1].set_title("Grayscale")
-
-    axes[0, 2].imshow(result["edges"], cmap="gray")
-    axes[0, 2].set_title("Edges")
-
-    axes[1, 0].imshow(result["glare_mask"], cmap="gray")
-    axes[1, 0].set_title("Glare mask")
-
-    axes[1, 1].imshow(result["high_frequency_map"], cmap="gray")
-    axes[1, 1].set_title("High-frequency map")
-
-    prob_bar = np.zeros((80, 400), dtype=np.uint8)
-    filled = int(probability / 100 * prob_bar.shape[1])
-    prob_bar[:, :filled] = 255
-
-    axes[1, 2].imshow(prob_bar, cmap="gray", vmin=0, vmax=255)
-    axes[1, 2].set_title(f"Photo monitor probability: {probability:.1f}%")
-
-    for ax in axes.ravel():
-        ax.axis("off")
-
-    plt.tight_layout()
-    plt.show()
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("image_path", type=str, help="Path to image file")
-    parser.add_argument(
-        "--show",
-        action="store_true",
-        help="Show postprocessed image visualization",
-    )
-
-    args = parser.parse_args()
-
-    result = analyze_image(args.image_path)
-
-    print(f"file: {result['image_path']}")
-    print(f"label: {result['label']}")
-    print(f"photo_of_monitor_probability: {result['probability']:.2f}%")
-    print(f"has_camera_exif: {result['has_camera_exif']}")
-    print(f"blur_score: {result['blur_score']:.2f}")
-    print(f"noise_score: {result['noise_score']:.2f}")
-    print(f"glare_score: {result['glare_score']:.6f}")
-    print(f"moire_score: {result['moire_score']:.4f}")
-    print(f"straight_lines_score: {result['straight_lines_score']:.0f}")
-
-    if args.show:
-        show_result(result)
-
-
-if __name__ == "__main__":
-    main()
