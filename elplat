@@ -1,6 +1,6 @@
 curl -X POST "http://localhost:8000/v1/audio/transcriptions" \
   -F "model=openai/whisper-large-v3-turbo" \
-  -F "file=@audio.mp3" \
+  -F "file=@output.wav;type=audio/wav" \
   -F "language=ru" \
-  -F "response_format=json" \
-  -F "temperature=0"
+  -F "response_format=verbose_json" \
+  -F "timestamp_granularities[]=segment"
