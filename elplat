@@ -12,6 +12,13 @@ curl "http://localhost:8000/v1/audio/transcriptions" \
   -F "response_format=verbose_json" \
   -F "timestamp_granularities[]=segment"
 
+curl -X POST http://localhost:8000/v1/audio/transcriptions \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@audio.mp3" \
+  -F "model=openai/whisper-large-v3" \
+  -F "language=ru" \
+  -F "response_format=json"
+
 whisper-vllm  | (APIServer pid=1) 
 whisper-vllm  | (APIServer pid=1) The above exception was the direct cause of the following exception:
 whisper-vllm  | (APIServer pid=1) 
