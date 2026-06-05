@@ -1,33 +1,6 @@
-services:
-  vllm-whisper:
-    image: vllm/vllm-openai:latest
-    container_name: vllm-whisper
-    restart: unless-stopped
-
-    network_mode: host
-    ipc: host
-
-    volumes:
-      - ~/.cache/huggingface:/root/.cache/huggingface
-
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - HF_HOME=/root/.cache/huggingface
-
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-
-    command: >
-      --model openai/whisper-large-v3
-      --task transcription
-      --host 0.0.0.0
-      --port 8000
-      --dtype float16
-      --max-model-len 448
-      --limit-mm-per-prompt audio=1
-      --max-num-seqs 4
+curl -X POST "http://localhost:8000/v1/audio/transcriptions" \
+  -F "model=openai/whisper-large-v3-turbo" \
+  -F "file=@audio.mp3" \
+  -F "language=ru" \
+  -F "response_format=json" \
+  -F "temperature=0"
