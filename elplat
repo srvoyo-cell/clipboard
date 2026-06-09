@@ -1,87 +1,38 @@
-panma@malvm-Atlas-H256:~/mlflow$ docker compose up --build
-[+] up 2/2
- ✔ Container mlflow-postgres Recreated                                                                                                                            0.3ss
- ✔ Container mlflow-server   Recreated                                                                                                                            10.4s
-Attaching to mlflow-postgres, mlflow-server
-mlflow-postgres  | The files belonging to this database system will be owned by user "postgres".
-mlflow-postgres  | This user must also own the server process.
-mlflow-postgres  | 
-mlflow-postgres  | The database cluster will be initialized with locale "en_US.utf8".
-mlflow-postgres  | The default database encoding has accordingly been set to "UTF8".
-mlflow-postgres  | The default text search configuration will be set to "english".
-mlflow-postgres  | 
-mlflow-postgres  | Data page checksums are disabled.
-mlflow-postgres  | 
-mlflow-postgres  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
-mlflow-postgres  | creating subdirectories ... ok
-mlflow-postgres  | selecting dynamic shared memory implementation ... posix
-mlflow-postgres  | selecting default max_connections ... 100
-mlflow-postgres  | selecting default shared_buffers ... 128MB
-mlflow-postgres  | selecting default time zone ... Etc/UTC
-mlflow-postgres  | creating configuration files ... ok
-mlflow-postgres  | running bootstrap script ... ok
-mlflow-server    | Requirement already satisfied: psycopg2-binary in /usr/local/lib/python3.10/site-packages (2.9.12)
-mlflow-postgres  | performing post-bootstrap initialization ... ok
-mlflow-postgres  | initdb: warning: enabling "trust" authentication for local connections
-mlflow-postgres  | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
-mlflow-postgres  | syncing data to disk ... ok
-mlflow-postgres  | 
-mlflow-postgres  | 
-mlflow-postgres  | Success. You can now start the database server using:
-mlflow-postgres  | 
-mlflow-postgres  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
-mlflow-postgres  | 
-mlflow-postgres  | waiting for server to start....2026-06-09 12:21:27.756 UTC [49] LOG:  starting PostgreSQL 16.14 (Debian 16.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
-mlflow-postgres  | 2026-06-09 12:21:27.760 UTC [49] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-mlflow-postgres  | 2026-06-09 12:21:27.769 UTC [52] LOG:  database system was shut down at 2026-06-09 12:21:27 UTC
-mlflow-postgres  | 2026-06-09 12:21:27.775 UTC [49] LOG:  database system is ready to accept connections
-mlflow-postgres  |  done
-mlflow-postgres  | server started
-mlflow-postgres  | CREATE DATABASE
-mlflow-postgres  | 
-mlflow-postgres  | 
-mlflow-postgres  | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
-mlflow-postgres  | 
-mlflow-postgres  | waiting for server to shut down....2026-06-09 12:21:27.981 UTC [49] LOG:  received fast shutdown request
-mlflow-postgres  | 2026-06-09 12:21:27.985 UTC [49] LOG:  aborting any active transactions
-mlflow-postgres  | 2026-06-09 12:21:27.988 UTC [49] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
-mlflow-postgres  | 2026-06-09 12:21:27.988 UTC [50] LOG:  shutting down
-mlflow-postgres  | 2026-06-09 12:21:27.990 UTC [50] LOG:  checkpoint starting: shutdown immediate
-mlflow-postgres  | 2026-06-09 12:21:28.039 UTC [50] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.023 s, sync=0.018 s, total=0.052 s; sync files=301, longest=0.007 s, average=0.001 s; distance=4273 kB, estimate=4273 kB; lsn=0/191F0E0, redo lsn=0/191F0E0
-mlflow-postgres  | 2026-06-09 12:21:28.045 UTC [49] LOG:  database system is shut down
-mlflow-postgres  |  done
-mlflow-postgres  | server stopped
-mlflow-postgres  | 
-mlflow-postgres  | PostgreSQL init process complete; ready for start up.
-mlflow-postgres  | 
-mlflow-postgres  | 2026-06-09 12:21:28.133 UTC [1] LOG:  starting PostgreSQL 16.14 (Debian 16.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
-mlflow-postgres  | 2026-06-09 12:21:28.133 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-mlflow-postgres  | 2026-06-09 12:21:28.133 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-mlflow-postgres  | 2026-06-09 12:21:28.138 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-mlflow-postgres  | 2026-06-09 12:21:28.145 UTC [65] LOG:  database system was shut down at 2026-06-09 12:21:28 UTC
-mlflow-postgres  | 2026-06-09 12:21:28.151 UTC [1] LOG:  database system is ready to accept connections
-mlflow-server    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
-mlflow-server    | 
-mlflow-server    | [notice] A new release of pip is available: 23.0.1 -> 26.1.2
-mlflow-server    | [notice] To update, run: pip install --upgrade pip
-mlflow-server    | Backend store URI not provided. Using sqlite:///mlflow.db
-mlflow-server    | Registry store URI not provided. Using backend store URI.
-mlflow-server    | 2026/06/09 12:21:31 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
-mlflow-server    | 2026/06/09 12:21:31 INFO mlflow.store.db.utils: Updating database tables
-mlflow-server    | [MLflow] Security middleware enabled with default settings (localhost-only). To allow connections from other hosts, use --host 0.0.0.0 and configure --allowed-hosts and --cors-allowed-origins.
-mlflow-server    | 2026/06/09 12:21:35 INFO:     Uvicorn running on http://127.0.0.1:5000 (Press CTRL+C to quit)
-mlflow-server    | 2026/06/09 12:21:35 INFO:     Started parent process [21]
-mlflow-server    | 2026/06/09 12:21:40 INFO mlflow.server.jobs.utils: Registered online_scoring_scheduler periodic task (runs every 1 minute)
-mlflow-server    | 2026/06/09 12:21:40 INFO mlflow.server.jobs.utils: Registered trace_archival_scheduler periodic task (polls every 1 minute and no-ops when trace archival is disabled or unconfigured)
-mlflow-server    | 2026/06/09 12:21:40 INFO:     Started server process [56]
-mlflow-server    | 2026/06/09 12:21:40 INFO:     Waiting for application startup.
-mlflow-server    | 2026/06/09 12:21:40 INFO:     Application startup complete.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Started server process [55]
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Waiting for application startup.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Application startup complete.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Started server process [53]
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Waiting for application startup.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Application startup complete.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Started server process [54]
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Waiting for application startup.
-mlflow-server    | 2026/06/09 12:21:41 INFO:     Application startup complete.
+services:
+  postgres:
+    image: postgres:16
+    container_name: mlflow-postgres
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow
+    volumes:
+      - //postgres_data:/var/lib/postgresql/data
+    # наружу Postgres можно не открывать
+    # ports:
+    #   - "5432:5432"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow-server
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./artifacts:/mlflow/artifacts
+    command:
+      - sh
+      - -c
+      - |
+        pip install psycopg2-binary
+        mlflow server \
+          --backend-store-uri postgresql://mlflow:mlflow@postgres:5432/mlflow \
+          --default-artifact-root /mlflow/artifacts \
+          --host 0.0.0.0 \
+          --port 5000 \
+          --allowed-hosts "*" \
+          --cors-allowed-origins "*"
+
+volumes:
+  postgres_data:
