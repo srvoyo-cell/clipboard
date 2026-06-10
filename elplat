@@ -68,38 +68,134 @@ services:
     restart: unless-stopped
 
 
-panma@malvm-Atlas-H256:~/Документы/ElplatAI$ docker compose up --build
-[+] up 16/16
- ✔ Image ollama/ollama:latest Pulled                                                                                                                                                                                                                            1266.1s
- ✔ Image qdrant/qdrant:latest Pulled                                                                                                                                                                                                                            27.3sss
-[+] Building 5.4s (4/4) FINISHED                                                                                                                                                                                                                                       
- => [internal] load local bake definitions                                                                                                                                                                                                                        0.0s
- => => reading from stdin 545B                                                                                                                                                                                                                                    0.0s
- => [internal] load build definition from Dockerfile                                                                                                                                                                                                              3.5s
- => => transferring dockerfile: 1.30kB                                                                                                                                                                                                                            0.1s
- => CANCELED [internal] load metadata for docker.io/library/python:3.13.12-slim-bookworm@sha256:a58daefb915e1e03ad48f3ca4df8832065412c5c35cacb9d39f4229184de12b6                                                                                                  0.1s
- => ERROR [internal] load metadata for ghcr.io/astral-sh/uv:0.5.31                                                                                                                                                                                                0.1s
-[+] up 16/17
- ✔ Image ollama/ollama:latest Pulled                                                                                                                                                                                                                            1266.1s
- ✔ Image qdrant/qdrant:latest Pulled                                                                                                                                                                                                                            27.3s
- ⠙ Image elplatai-app         Building                                                                                                                                                                                                                          5.8s
-Dockerfile:8
+import tempfile
+from pathlib import Path
 
---------------------
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from openai import OpenAI
+from pydub import AudioSegment
 
-   6 |         && rm -rf /var/lib/apt/lists/*
 
-   7 |     
+app = FastAPI()
+client = OpenAI()
 
-   8 | >>> COPY --from=ghcr.io/astral-sh/uv:0.5.31 /uv /usr/local/bin/
 
-   9 |     
+def split_stereo_to_mono(input_path: Path, output_dir: Path) -> tuple[Path, Path]:
+    audio = AudioSegment.from_file(input_path)
 
-  10 |     WORKDIR /project
+    if audio.channels != 2:
+        raise ValueError(f"Expected stereo audio with 2 channels, got {audio.channels}")
 
---------------------
+    left_channel, right_channel = audio.split_to_mono()
 
-failed to solve: ghcr.io/astral-sh/uv:0.5.31: failed to resolve source metadata for ghcr.io/astral-sh/uv:0.5.31: failed to do request: Head "https://ghcr.io/v2/astral-sh/uv/manifests/0.5.31": dial tcp: lookup ghcr.io on 127.0.0.53:53: no such host
+    left_path = output_dir / "speaker_00.wav"
+    right_path = output_dir / "speaker_01.wav"
 
-panma@malvm-Atlas-H256:~/Документы/ElplatAI$ 
+    # Важно: длина каналов сохраняется одинаковой.
+    # Поэтому timestamp'ы потом можно объединять по общей временной шкале.
+    left_channel.export(left_path, format="wav")
+    right_channel.export(right_path, format="wav")
+
+    return left_path, right_path
+
+
+def transcribe_with_segments(audio_path: Path, speaker: str) -> list[dict]:
+    with open(audio_path, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file,
+            response_format="verbose_json",
+            timestamp_granularities=["segment"],
+            language="ru",
+        )
+
+    segments = []
+
+    for segment in transcription.segments:
+        text = segment.text.strip()
+
+        if not text:
+            continue
+
+        segments.append(
+            {
+                "speaker": speaker,
+                "start": float(segment.start),
+                "end": float(segment.end),
+                "text": text,
+            }
+        )
+
+    return segments
+
+
+def merge_nearby_segments(dialog: list[dict], max_gap: float = 1.0) -> list[dict]:
+    """
+    Склеивает соседние реплики одного и того же спикера,
+    если между ними маленькая пауза.
+    """
+    if not dialog:
+        return []
+
+    merged = [dialog[0]]
+
+    for item in dialog[1:]:
+        prev = merged[-1]
+
+        same_speaker = item["speaker"] == prev["speaker"]
+        small_gap = item["start"] - prev["end"] <= max_gap
+
+        if same_speaker and small_gap:
+            prev["end"] = item["end"]
+            prev["text"] = prev["text"] + " " + item["text"]
+        else:
+            merged.append(item)
+
+    return merged
+
+
+@app.post("/transcribe-dialog")
+async def transcribe_dialog(file: UploadFile = File(...)):
+    try:
+        suffix = Path(file.filename or "audio.mp3").suffix or ".mp3"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+
+            input_path = tmp_dir / f"input{suffix}"
+            input_path.write_bytes(await file.read())
+
+            left_path, right_path = split_stereo_to_mono(input_path, tmp_dir)
+
+            speaker_00_segments = transcribe_with_segments(
+                audio_path=left_path,
+                speaker="speaker_00",
+            )
+
+            speaker_01_segments = transcribe_with_segments(
+                audio_path=right_path,
+                speaker="speaker_01",
+            )
+
+            dialog = speaker_00_segments + speaker_01_segments
+
+            # Главное место: сортируем реплики двух каналов по времени
+            dialog.sort(key=lambda x: x["start"])
+
+            # Опционально склеиваем близкие куски одного спикера
+            dialog = merge_nearby_segments(dialog, max_gap=1.0)
+
+            return {
+                "dialog": dialog,
+                "text": "\n".join(
+                    f'{item["speaker"]}: {item["text"]}'
+                    for item in dialog
+                ),
+            }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Dialog transcription failed: {str(e)}",
+        )
 
