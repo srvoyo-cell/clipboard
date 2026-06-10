@@ -200,28 +200,11 @@ async def transcribe_dialog(file: UploadFile = File(...)):
         )
 
 
-app-1     | Traceback (most recent call last):
-app-1     |   File "<frozen runpy>", line 198, in _run_module_as_main
-app-1     |   File "<frozen runpy>", line 88, in _run_code
-app-1     |   File "/project/src/elplatai/main.py", line 1, in <module>
-app-1     |     from elplatai.api.fastapi_server import main
-app-1     |   File "/project/src/elplatai/api/fastapi_server.py", line 12, in <module>
-app-1     |     from elplatai.schemes.api_schemes import UnifiedRequest  # noqa: E402
-app-1     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-app-1     |   File "/project/src/elplatai/schemes/api_schemes.py", line 18, in <module>
-app-1     |     from elplatai.handlers.photo_type_detection import PhotoTypeDetectionAction
-app-1     |   File "/project/src/elplatai/handlers/photo_type_detection.py", line 3, in <module>
-app-1     |     from elplatai.services.photo_type_detection import detect_photo_type
-app-1     |   File "/project/src/elplatai/services/photo_type_detection.py", line 2, in <module>
-app-1     |     from elplatai.services.face_detection import FaceDetection
-app-1     |   File "/project/src/elplatai/services/face_detection.py", line 4, in <module>
-app-1     |     from elplatai.ai_init.insightface import face_analysis
-app-1     |   File "/project/src/elplatai/ai_init/insightface.py", line 3, in <module>
-app-1     |     face_analysis = FaceAnalysis(name='buffalo_l', providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
-app-1     |   File "/project/.venv/lib/python3.13/site-packages/insightface/app/face_analysis.py", line 43, in __init__
-app-1     |     assert 'detection' in self.models
-app-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
-app-1     | AssertionError
-app-1 exited with code 1 (restarting)
-
+curl -sS -X POST "$BASE_URL/" -H 'Content-Type: application/json' -d '{
+  "action": "ask_llm",
+  "text": "Как изменить адрес доставки заказа",
+  "prompt": "Разбей запрос на короткие вопросы для поиска по базе знаний",
+  "pydantic_schema": "general_parse",
+  "quantity": 3
+}'
 
