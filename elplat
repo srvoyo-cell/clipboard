@@ -208,3 +208,10 @@ curl -sS -X POST "$BASE_URL/" -H 'Content-Type: application/json' -d '{
   "quantity": 3
 }'
 
+curl -sS -X POST "$BASE_URL/" \
+  -H 'Content-Type: application/json' \
+  -d "{
+    \"action\": \"ask_llm\",
+    \"file\": \"$(base64 -w 0 audio.mp3)\"
+  }"
+
